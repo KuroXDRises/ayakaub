@@ -15,9 +15,9 @@ async def eval_command(c: Client, m: Message):
             reply_parameters=ReplyParameters(message_id=m.id)
         )
         return
-
+    username = str((await c.get_users(int(Config.BOT_TOKEN.split(":")[0]))).username)
     result = await c.get_inline_bot_results(
-        bot=int(Config.BOT_TOKEN.split(":")[0]),
+        bot=username,
         query=f"eval {parts[1]}"
     )
     await c.send_inline_bot_result(
