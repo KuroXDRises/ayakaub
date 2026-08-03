@@ -11,6 +11,7 @@ from config import Config
 import re
 
 PASTE_RE = re.compile(r"\n*\.\.\. output too long, full result: (https://pastebin\.com/\S+)\s*$")
+SEP = "━━━━━━━━━━━━━━━━━━━━"
 
 
 def build_sh_result(cmd: str, raw_result: str):
@@ -24,15 +25,15 @@ def build_sh_result(cmd: str, raw_result: str):
         result_text = "Command Executed." if raw_result == "Done." else raw_result
 
     text = (
-        f"╭─────────────────╮\n"
-        f"         📟 **Shell Output**\n"
-        f"╰─────────────────╯\n\n"
-        f"**Command:**\n```bash\n{cmd}\n```\n\n"
+        f"📟 **Shell Output**\n"
+        f"{SEP}\n"
+        f"**Command:**\n```bash\n{cmd}\n```\n"
+        f"{SEP}\n"
         f"**Result:**\n"
         f"<blockquote>{result_text}</blockquote>"
     )
     if paste_url:
-        text += "\n_Output truncated — full result on Pastebin._"
+        text += f"\n{SEP}\n_Output truncated — full result on Pastebin._"
 
     buttons = [InlineKeyboardButton("🗑 Close", callback_data="close_sh")]
     if paste_url:
@@ -56,15 +57,15 @@ async def sh_inline(c: Client, q: InlineQuery):
         ], cache_time=0)
         return
 
-    cmd = parts[1]
+    cmd_text = parts[1]
 
-    eval_helper["code"] = cmd
+    eval_helper["code"] = cmd_text
     eval_helper["chat_id"] = q.from_user.id
 
     raw_result = await get_sh_output(parts, c, None)
     eval_helper["result"] = raw_result
 
-    text, keyboard = build_sh_result(cmd, raw_result)
+    text, keyboard = build_sh_result(cmd_text, raw_result)
 
     await q.answer([
         InlineQueryResultArticle(

@@ -5,15 +5,25 @@ from io import StringIO
 from contextlib import redirect_stdout, redirect_stderr
 from config import Config
 
+EXEC_TIMEOUT = 25  # seconds, applies to both eval and sh
+
 eval_helper = {
-    "result":None,
-    "code":None,
-    "chat_id":None,
-    'message_id':None,
-    'sent_id':None,
-    "paste_id":None,
-    "googleit_url":None
+    "result": None,
+    "code": None,
+    "chat_id": None,
+    'message_id': None,
+    'sent_id': None,
+    "paste_id": None,
+    "googleit_url": None,
+    # set by a command handler right before relaying through
+    # get_inline_bot_results, so the inline handler (which otherwise only
+    # sees the bot's own identity when the bot queries itself) can pick up
+    # the REAL user who ran the command instead.
+    "pending_user": None,
+    "pending_chat_id": None,
+    "pending_reply": None
 }
+
 
 async def aexec(code: str, client, msg):
     # Telegram formatting / copy-paste can inject invisible unicode chars
@@ -45,7 +55,6 @@ async def aexec(code: str, client, msg):
     )
 
     return await local_vars["__ex"]()
-
 
 
 async def paste_to_pastebin(content: str) -> str:
@@ -85,7 +94,9 @@ async def get_output(parts, c, m):
 
     try:
         with redirect_stdout(buffer), redirect_stderr(buffer):
-            result = await aexec(code, c, m)
+            result = await asyncio.wait_for(aexec(code, c, m), timeout=EXEC_TIMEOUT)
+    except asyncio.TimeoutError:
+        exception = f"⏱ Execution timed out (>{EXEC_TIMEOUT}s). Possible infinite loop or blocking call."
     except Exception:
         exception = traceback.format_exc()
 
@@ -117,8 +128,14 @@ async def sh_exec(cmd: str) -> str:
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.STDOUT
     )
-    stdout, _ = await process.communicate()
-    return stdout.decode(errors="ignore").strip()
+
+    try:
+        stdout, _ = await asyncio.wait_for(process.communicate(), timeout=EXEC_TIMEOUT)
+        return stdout.decode(errors="ignore").strip()
+    except asyncio.TimeoutError:
+        process.kill()
+        await process.wait()
+        return f"⏱ Command timed out (>{EXEC_TIMEOUT}s) and was killed."
 
 
 async def get_sh_output(parts, c, m):
