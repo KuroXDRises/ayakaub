@@ -1,10 +1,12 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message, ReplyParameters
+from ..filters import ADMINS
 from ayaka import cmd
 from config import Config
 
+AI_CACHE = {}
 
-@Client.on_message(cmd(["ai", "ask"]), group=1)
+@Client.on_message(cmd(["ai", "ask"]) & ADMINS.message(), group=1)
 async def ai_command(c: Client, m: Message):
     parts = m.text.split(None, 1)
 
@@ -29,9 +31,12 @@ async def ai_command(c: Client, m: Message):
         )
         return
 
-    await c.send_inline_bot_result(
+    x = await c.send_inline_bot_result(
         chat_id=m.chat.id,
         query_id=result.query_id,
         result_id=result.results[0].id,
         reply_parameters=ReplyParameters(message_id=m.id)
     )
+    AI_CACHE["chat_id"] = m.chat.id
+    AI_CACHE["message_id"] = x.id
+    AI_CACHE["sent_id"] = m.id

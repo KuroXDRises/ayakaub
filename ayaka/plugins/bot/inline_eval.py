@@ -1,3 +1,4 @@
+import cmath
 from pyrogram import Client, filters
 from pyrogram.types import (
     Message, InlineKeyboardButton,
@@ -5,9 +6,12 @@ from pyrogram.types import (
     InlineQuery, InlineQueryResultArticle,
     InputTextMessageContent
 )
+from pyrogram.enums import ButtonStyle
 from ..filters import ADMINS
 from ..utilities.dev import get_output, eval_helper
+from ..user.eval import EVAL_CACHE
 from config import Config
+from ayaka import userbot
 import re
 
 PASTE_RE = re.compile(r"\n*\.\.\. output too long, full result: (https://pastebin\.com/\S+)\s*$")
@@ -73,9 +77,9 @@ def build_result(code: str, raw_result: str):
     if paste_url:
         text += f"\n{SEP}\n_Output truncated — full result on Pastebin._"
 
-    buttons = [InlineKeyboardButton("🗑 Close", callback_data="close_eval")]
+    buttons = [InlineKeyboardButton("🗑 Close", callback_data="close_eval", style=ButtonStyle.PRIMARY)]
     if paste_url:
-        buttons.insert(0, InlineKeyboardButton("📄 See Full Output", url=paste_url))
+        buttons.insert(0, InlineKeyboardButton("📄 See Full Output", url=paste_url, style=ButtonStyle.PRIMARY))
 
     return text, InlineKeyboardMarkup([buttons])
 
@@ -83,7 +87,7 @@ def build_result(code: str, raw_result: str):
 @Client.on_inline_query(filters.regex(r"^(eval|e)\s") & ADMINS.inline())
 async def eval_inline(c: Client, q: InlineQuery):
     parts = q.query.split(None, 1)
-
+    
     if len(parts) < 2 or not parts[1].strip():
         text = "❌ No code given.\n\nUsage: `eval <code>` or `e <code>`"
         await q.answer([
@@ -119,5 +123,8 @@ async def eval_inline(c: Client, q: InlineQuery):
 
 @Client.on_callback_query(filters.regex(r"^close_eval$") & ADMINS.callback())
 async def close_eval_callback(c: Client, cq: CallbackQuery):
-    await cq.message.delete()
+    await userbot.delete_messages(
+        chat_id=EVAL_CACHE.get("chat_id"),
+        message_ids=[EVAL_CACHE.get("message_id"), EVAL_CACHE.get("sent_id")]
+    )
     await cq.answer("Closed.")

@@ -35,6 +35,9 @@ class Bot(Client):
             plugins=(dict(root="ayaka.plugins.bot"))
         )
 
+bot = Bot()
+userbot = UserBot()
+
 uptime:int|float = time.time()
 
 def get_uptime() -> str:

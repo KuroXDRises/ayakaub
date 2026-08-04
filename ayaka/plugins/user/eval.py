@@ -5,6 +5,7 @@ from ..utilities.dev import eval_helper
 from ayaka import cmd
 from config import Config
 
+EVAL_CACHE = {}
 
 @Client.on_message(cmd(["eval", "e"]) & ADMINS.message(), group=1)
 async def eval_command(c: Client, m: Message):
@@ -36,10 +37,12 @@ async def eval_command(c: Client, m: Message):
             reply_parameters=ReplyParameters(message_id=m.id)
         )
         return
-
-    await c.send_inline_bot_result(
+    EVAL_CACHE["chat_id"] = m.chat.id
+    x = await c.send_inline_bot_result(
         chat_id=m.chat.id,
         query_id=result.query_id,
         result_id=result.results[0].id,
         reply_parameters=ReplyParameters(message_id=m.id)
     )
+    EVAL_CACHE["message_id"] = x.id
+    EVAL_CACHE["sent_id"] = m.id

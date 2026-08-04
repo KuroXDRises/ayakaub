@@ -4,6 +4,7 @@ from ..filters import ADMINS
 from ayaka import cmd
 from config import Config
 
+SHEL_CACHE = {}
 
 @Client.on_message(cmd(["sh"]) & ADMINS.message(), group=1)
 async def sh_command(c: Client, m: Message):
@@ -29,10 +30,12 @@ async def sh_command(c: Client, m: Message):
             reply_parameters=ReplyParameters(message_id=m.id)
         )
         return
-
-    await c.send_inline_bot_result(
+    SHEL_CACHE["chat_id"] = m.chat.id
+    x = await c.send_inline_bot_result(
         chat_id=m.chat.id,
         query_id=result.query_id,
         result_id=result.results[0].id,
         reply_parameters=ReplyParameters(message_id=m.id)
     )
+    SHEL_CACHE["message_id"] = x.id
+    SHEL_CACHE["sent_id"] = m.id

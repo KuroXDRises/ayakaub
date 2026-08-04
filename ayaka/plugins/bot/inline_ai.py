@@ -5,6 +5,9 @@ from pyrogram.types import (
     InlineKeyboardMarkup, InlineKeyboardButton,
     CallbackQuery
 )
+from pyrogram.enums import ButtonStyle
+from ayaka import userbot
+from ..user.ayaka import AI_CACHE
 from ..utilities.ai import AyakaAI
 from config import Config
 
@@ -38,7 +41,7 @@ async def ai_inline(c: Client, q: InlineQuery):
                 rich_message=InputRichMessage(html=html)
             ),
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("🗑 Close", callback_data="close_ai")]
+                [InlineKeyboardButton("🗑 Close", callback_data="close_ai", style=ButtonStyle.DANGER)]
             ])
         )
     ], cache_time=0)
@@ -46,5 +49,8 @@ async def ai_inline(c: Client, q: InlineQuery):
 
 @Client.on_callback_query(filters.regex(r"^close_ai$"), group=-51)
 async def close_ai_callback(c: Client, cq: CallbackQuery):
-    await cq.message.delete()
+    await userbot.delete_messages(
+        chat_id=AI_CACHE['chat_id'],
+        message_ids=[AI_CACHE["message_id"], AI_CACHE["sent_id"]]
+    )
     await cq.answer("Closed.")

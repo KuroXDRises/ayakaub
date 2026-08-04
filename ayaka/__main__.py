@@ -1,15 +1,16 @@
 from telebot.util import async_antiflood
-from ayaka import Bot, UserBot
+from ayaka import bot, userbot
 from pyrogram import idle
 from .server import startServer
 import uvloop
 import asyncio
 
 
+uvloop.install()
 async def main():
     try:
-        await Bot().start()
-        await UserBot().start()
+        await bot.start()
+        await userbot.start()
         asyncio.create_task(startServer())
         print("Ayaka Userbot started")
         await idle()
@@ -17,13 +18,13 @@ async def main():
         print(e)
     finally:
         try:
-            if Bot().is_connected:
-                await Bot().stop()
+            if bot.is_connected:
+                await bot.stop()
         except Exception:
             pass
         try:
-            if UserBot().is_connected:
-                await UserBot().stop()
+            if userbot.is_connected:
+                await userbot.stop()
         except Exception:
             pass
 
