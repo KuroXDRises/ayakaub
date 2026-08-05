@@ -7,9 +7,8 @@ from config import Config
 
 @Client.on_message(cmd("alive") & ADMINS.message(), group=2)
 async def alive_command(c:Client, m:Message):
-    username = str((await c.get_users(int(Config.BOT_TOKEN.split(":")[0]))).username)
     result = await c.get_inline_bot_results(
-        bot=username,
+        bot=Config.BOT_USERNAME,
         query=""
     )
     await c.send_inline_bot_result(
@@ -18,3 +17,4 @@ async def alive_command(c:Client, m:Message):
         result_id=result.results[0].id,
         reply_parameters=ReplyParameters(message_id=m.id)
     )
+    

@@ -8,9 +8,8 @@ from config import Config
 
 @Client.on_message(cmd(["logs"]) & ADMINS.message(), group=1)
 async def logs_command(c: Client, m: Message):
-    username = str((await c.get_users(int(Config.BOT_TOKEN.split(":")[0]))).username)
     result = await c.get_inline_bot_results(
-        bot=username,
+        bot=Config.BOT_USERNAME,
         query="logs"
     )
     await c.send_inline_bot_result(

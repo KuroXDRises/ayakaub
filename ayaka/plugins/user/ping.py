@@ -17,9 +17,8 @@ async def ping_command(c:Client, m:Message):
     )
     latency = round((time.perf_counter()-start)*1000)
     eval_helper["latency"] = latency
-    username = str((await c.get_users(int(Config.BOT_TOKEN.split(":")[0]))).username)
     result = await c.get_inline_bot_results(
-        bot=username,
+        bot=Config.BOT_USERNAME,
         query="stats"
     )
     await x.delete()

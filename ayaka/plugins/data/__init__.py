@@ -12,3 +12,20 @@ class AfkState:
 
 
 AFK_DATA = AfkState()
+
+@dataclass
+class QuoteState:
+    status: bool = False
+    chat_id: int | None = None
+    message_id: int | None = None
+    topic_id: int | None = None
+
+QUOTE_STATE = QuoteState()
+
+@dataclass
+class PrivateChatState:
+    status: bool = False
+    time_limit: int = 120
+    approved = set()
+
+PRIVATE_CHAT_STATE = PrivateChatState()

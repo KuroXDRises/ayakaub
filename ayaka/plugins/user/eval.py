@@ -24,10 +24,8 @@ async def eval_command(c: Client, m: Message):
     eval_helper["pending_chat_id"] = m.chat.id
     eval_helper["pending_reply"] = m.reply_to_message
 
-    username = str((await c.get_users(int(Config.BOT_TOKEN.split(":")[0]))).username)
-
     result = await c.get_inline_bot_results(
-        bot=username,
+        bot=Config.BOT_USERNAME,
         query=f"eval {parts[1]}"
     )
 

@@ -18,9 +18,8 @@ async def ai_command(c: Client, m: Message):
         return
 
     query = parts[1].strip()
-    username = str((await c.get_users(int(Config.BOT_TOKEN.split(":")[0]))).username)
     result = await c.get_inline_bot_results(
-        bot=username,
+        bot=Config.BOT_USERNAME,
         query=f"ai {query}"
     )
 
