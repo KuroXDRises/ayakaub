@@ -109,15 +109,21 @@ async def _send_help(m: Message):
     await m.reply_text(build_help_message(), reply_markup=build_home_keyboard())
 
 
-@Client.on_message(cmd(["help"]))
+@Client.on_message(cmd(["help"]), group=869)
 async def help_command(c: Client, m: Message):
     await _send_help(m)
 
 
-@Client.on_business_message(cmd(["help"]))
+@Client.on_business_message(cmd(["help"]), group=869)
 async def help_business_command(c: Client, m: Message):
     await _send_help(m)
 
+
+# NOTE: every callback handler below uses cq.edit_message_text(...) instead
+# of cq.message.edit_text(...). When a message comes from an inline query
+# result, cq.message is None (Telegram only gives an inline_message_id) —
+# cq.edit_message_text() handles both cases automatically, cq.message.edit_text
+# would crash with AttributeError on inline-originated messages.
 
 @Client.on_callback_query(filters.regex(r"^cat_"))
 async def help_category_callback(c: Client, cq: CallbackQuery):
@@ -126,7 +132,7 @@ async def help_category_callback(c: Client, cq: CallbackQuery):
         await cq.answer("Category not found.", show_alert=True)
         return
     category_name, cat_info = result
-    await cq.message.edit_text(
+    await cq.edit_message_text(
         build_category_message(category_name, cat_info),
         reply_markup=build_category_keyboard(cat_info)
     )
@@ -140,7 +146,7 @@ async def help_command_callback(c: Client, cq: CallbackQuery):
         await cq.answer("Command not found.", show_alert=True)
         return
     category_name, cat_info, cmd_name, info = result
-    await cq.message.edit_text(
+    await cq.edit_message_text(
         build_command_message(cmd_name, info),
         reply_markup=build_command_keyboard(cat_info["callback"])
     )
@@ -149,11 +155,17 @@ async def help_command_callback(c: Client, cq: CallbackQuery):
 
 @Client.on_callback_query(filters.regex(r"^help_home$"))
 async def help_home_callback(c: Client, cq: CallbackQuery):
-    await cq.message.edit_text(build_help_message(), reply_markup=build_home_keyboard())
+    await cq.edit_message_text(build_help_message(), reply_markup=build_home_keyboard())
     await cq.answer()
 
 
 @Client.on_callback_query(filters.regex(r"^help_close$"))
 async def help_close_callback(c: Client, cq: CallbackQuery):
-    await cq.message.delete()
+    # inline-sent messages can't be deleted via the Bot API (Telegram has no
+    # such method) — only edited. Regular messages CAN be deleted, so only
+    # do that when cq.message actually exists.
+    if cq.message:
+        await cq.message.delete()
+    else:
+        await cq.edit_message_text("❌ <b>Closed.</b>")
     await cq.answer("Closed.")

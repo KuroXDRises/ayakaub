@@ -42,7 +42,7 @@ def rich_text_setup() -> str:
 """
 
 
-@Client.on_inline_query(ADMINS.inline())
+@Client.on_inline_query(filters.regex(r"^alive") & ADMINS.inline())
 async def inline(c:Client, q:InlineQuery):
    await q.answer([
        InlineQueryResultArticle(
