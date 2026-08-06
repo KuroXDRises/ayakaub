@@ -8,6 +8,12 @@ HELP_DATA = {
                 "description": "Ask AyakaAI a question — returns an HTML-formatted answer.",
                 "callback": "help_ai"
             },
+            "ayaka": {
+                "aliases": [],
+                "usage": "ayaka (bot_username) [query] (guest_mode)",
+                "description": " Ask AyakaAI a question – returns an HTML formatted answer.",
+                "callback": "help_ayaka_guest"
+            },
         }
     },
     "🛠 Developer": {
@@ -159,6 +165,30 @@ HELP_DATA = {
                 "description": "Unblock a user.",
                 "callback": "help_unblock",
                 "note": "Must be used as a reply."
+            },
+            "silent": {
+                "aliases": [],
+                "usage": "/silent",
+                "description": "Silent a chat\'s messages, The userbot will read it for you.",
+                "callback": "help_silent"
+            },
+            "unsilent": {
+                "aliases": [],
+                "usage": "/unsilent",
+                "description": "Unsilent all chat\'s messages, The userbot will not read them.",
+                "callback": "help_unsilent"
+            },
+            "unsilent_chat": {
+                "aliases": [],
+                "usage": "/unsilent_chat",
+                "description": "Unsilent a chat\'s messages, The userbot will not read them.",
+                "callback": "help_unsilent_chat"
+            },
+            "silent_status": {
+                "aliases": [],
+                "usage": "/silent_status",
+                "description": "Check the Silent State status and the approved user\'s list.",
+                "callback": "help_silent_status"
             },
         }
     },
