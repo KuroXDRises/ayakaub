@@ -29,3 +29,10 @@ class PrivateChatState:
     approved = set()
 
 PRIVATE_CHAT_STATE = PrivateChatState()
+
+@dataclass
+class SilentState:
+    status: bool = False
+    chat_ids = set()
+
+SILENT_STATE = SilentState()
