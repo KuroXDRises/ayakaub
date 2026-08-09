@@ -27,7 +27,7 @@ If your message is important, simply tap the <b>button below</b> to contact them
 <b>══════════════════════════</b>
 """
 
-@Client.on_business_message(filters.private & ~filters.me & ~ADMINS.message(), group=-124)
+@Client.on_business_message(filters.private & ~filters.me, group=-124)
 async def send_dm_message(c:Client, m:Message):
     connection_id = m.business_connection_id
     connection = await c.get_business_connection(connection_id)

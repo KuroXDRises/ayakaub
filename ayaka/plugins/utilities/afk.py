@@ -1,6 +1,8 @@
 import time
 from ..data import AFK_DATA
 
+NOTIFY_COOLDOWN = 300  # 5 minutes — one notice per user per this window
+
 
 def set_afk(
     reason: str = "Not Provided",
@@ -50,12 +52,15 @@ def format_afk_duration() -> str:
 
 
 def has_been_notified(user_id: int) -> bool:
-    return user_id in AFK_DATA.users
+    """True if this user was already notified within the cooldown window."""
+    last = AFK_DATA.users.get(user_id)
+    if last is None:
+        return False
+    return (time.time() - last) < NOTIFY_COOLDOWN
 
 
 def mark_notified(user_id: int) -> None:
-    if user_id not in AFK_DATA.users:
-        AFK_DATA.users.append(user_id)
+    AFK_DATA.users[user_id] = time.time()
 
 
 def has_afk_media() -> bool:

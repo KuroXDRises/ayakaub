@@ -1,4 +1,3 @@
-import isort
 from pyrogram import Client, filters
 from pyrogram.types import Message, ReplyParameters
 from ..utilities.afk import (
@@ -87,11 +86,11 @@ async def afk_notifier(c: Client, m: Message):
         reply_parameters=ReplyParameters(message_id=m.id)
     )
 
+
 @Client.on_message(filters.text & filters.me, group=-9)
-async def auto_unafk(c:Client, m:Message):
-    if is_afk():
-        duration = format_afk_duration()
-        remove_afk()
-        await m.reply(f"{m.from_user.first_name} came back online 🟢\nAfk Since: {duration}")
-    else:
+async def auto_unafk(c: Client, m: Message):
+    if not is_afk():
         return
+    duration = format_afk_duration()
+    remove_afk()
+    await m.reply(f"{m.from_user.first_name} came back online 🟢\nAFK Since: {duration}")

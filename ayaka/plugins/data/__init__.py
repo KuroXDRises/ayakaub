@@ -1,6 +1,5 @@
 from dataclasses import dataclass, field
 
-
 @dataclass
 class AfkState:
     status: bool = False
@@ -8,10 +7,10 @@ class AfkState:
     afk_time: float | None = None
     media_from_chat: int | None = None
     message_media_id: int | None = None
-    users: list[int] = field(default_factory=list)
-
+    users: dict[int, float] = field(default_factory=dict)  # user_id -> last_notified_at
 
 AFK_DATA = AfkState()
+
 
 @dataclass
 class QuoteState:
@@ -36,3 +35,12 @@ class SilentState:
     chat_ids = set()
 
 SILENT_STATE = SilentState()
+
+@dataclass
+class RPSState:
+    status: bool = False
+    players = []
+    p1_id: int | None = None
+    p2_id: int | None = None
+
+RPS_STATE = RPSState()
