@@ -1,4 +1,3 @@
-from openai.types.video_create_params import InputReference
 from pyrogram import Client, filters
 from pyrogram.types import (
     Message, InlineQuery, CallbackQuery,
