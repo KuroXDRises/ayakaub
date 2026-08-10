@@ -4,3 +4,4 @@ uvloop
 aiohttp
 python-dotenv
 groq
+google-genai
