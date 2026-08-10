@@ -77,11 +77,11 @@ bot_username=your_bot_username # optional
 session=your_session_string
 admin_id=your_telegram_account_id
 paste_bin_api=your_paste_bin_account_api
-groq_api_key=your_groq_api_key
+gemini_api_key=your_gemini_api_key
 ```
 
 > Generate `session` with a Pyrogram session-string generator using the same `api_id`/`api_hash` you configure — mismatched pairs will fail to authenticate.
-> Get a free Groq key at [console.groq.com/keys](https://console.groq.com/keys) — no billing required.
+> Get a free Gemini key at [AIStudio](https://aistudio.google.com/app/api-keys?) — no billing required.
 
 ### 4. Run
 ```bash
