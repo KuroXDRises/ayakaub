@@ -11,9 +11,15 @@ HELP_DATA = {
             "ayaka": {
                 "aliases": [],
                 "usage": "ayaka (bot_username) [query] (guest_mode)",
-                "description": " Ask AyakaAI a question – returns an HTML formatted answer.",
+                "description": "Ask AyakaAI a question – returns an HTML formatted answer.",
                 "callback": "help_ayaka_guest"
             },
+            "anime": {
+                "aliases": [],
+                "usage": "anime [anime-name] (inline)",
+                "description": "Search your desired anime – AI will search it for you.",
+                "callback": "help_anime"
+            }
         }
     },
     "🛠 Developer": {
@@ -229,4 +235,21 @@ HELP_DATA = {
             },
         }
     },
+    "🎮 Games": {
+        "callback": "cat_games",
+        "commands": {
+            "rps": {
+                "aliases": [],
+                "usage": "rps (inline)",
+                "description": "Play Rock-Paper-Scissors with your friends. (Computer mode comming soon)",
+                "callback": "help_rps"
+            }
+            "xo": {
+                "aliases": [],
+                "usage": "xo (inline)",
+                "description": "Play Tic-Tac-Toe with your friends. (Computer mode comming soon)",
+                "callback": "help_xo"
+            }
+        }
+    }
 }

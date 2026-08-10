@@ -27,7 +27,7 @@ def build_help_message() -> str:
 def build_category_message(category_name: str, cat_info: dict) -> str:
     lines = [f"<b>{category_name}</b>", SEP]
     for cmd_name in cat_info["commands"]:
-        lines.append(f"➤ /{cmd_name}")
+        lines.append(f"➤ **{cmd_name}**")
     lines.append(SEP)
     return "\n".join(lines)
 
