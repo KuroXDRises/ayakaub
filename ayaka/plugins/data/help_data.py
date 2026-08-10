@@ -243,13 +243,13 @@ HELP_DATA = {
                 "usage": "rps (inline)",
                 "description": "Play Rock-Paper-Scissors with your friends. (Computer mode comming soon)",
                 "callback": "help_rps"
-            }
+            },
             "xo": {
                 "aliases": [],
                 "usage": "xo (inline)",
                 "description": "Play Tic-Tac-Toe with your friends. (Computer mode comming soon)",
                 "callback": "help_xo"
-            }
+            },
         }
     }
 }
