@@ -3,7 +3,9 @@ from pyrogram.enums import ParseMode
 import logging
 import time
 import uvloop
+import asyncio
 from config import Config
+
 
 logging.basicConfig(
     level=logging.INFO,
@@ -12,6 +14,12 @@ logging.basicConfig(
 )
 
 uvloop.install()
+try:
+    loop = asyncio.get_event_loop()
+except RuntimeError:
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+
 
 class UserBot(Client):
     def __init__(self):

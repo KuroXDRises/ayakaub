@@ -1,8 +1,9 @@
 import re
-from groq import AsyncGroq
 from config import Config
+from google import genai
+from google.genai import types
 
-GROQ_API_KEY = Config.GROQ_API_KEY
+
 TELEGRAM_LIMIT = 4096
 
 HTML_SYSTEM_PROMPT = """
@@ -93,49 +94,33 @@ STRICTLY OUTPUT VALID HTML ONLY.
 
 
 class AyakaAI:
-    def __init__(self, query: str = "", model: str = "llama-3.3-70b-versatile"):
+    def __init__(self, query: str = "", model: str = "gemini-2.0-flash"):
+        self.model = model
+        self.client = genai.Client(api_key=Config.GEMINI_API_KEY)
         self._query = query
-        self.prompt = None
-        self.model_name = model
-        self.client = AsyncGroq(api_key=GROQ_API_KEY)
 
-    def set_prompt(self, prompt: str) -> None:
-        self.prompt = prompt
-
-    def _build_prompt(self) -> str:
-        if self.prompt:
-            return self.prompt
-        return f"Question:\n{self._query}\n\nAnswer strictly in HTML."
-
-    async def ask(self) -> str:
+    async def _ask(self) -> str:
         try:
-            prompt = self._build_prompt()
-
-            response = await self.client.chat.completions.create(
-                model=self.model_name,
-                messages=[
-                    {"role": "system", "content": HTML_SYSTEM_PROMPT},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.6,
-                max_tokens=1024
+            resp = await self.client.aio.models.generate_content(
+                model=self.model,
+                contents=self._query,
+                config=types.GenerateContentConfig(system_instruction=HTML_SYSTEM_PROMPT)
             )
-
-            text = (response.choices[0].message.content or "").strip()
+            text = (resp.text or "").strip()
             text = self._strip_code_fence(text)
             return self._safe_truncate(text, TELEGRAM_LIMIT)
 
         except Exception as e:
             err = str(e)
+            print(f"[AyakaAI] error: {err}")  # so failures are actually visible, not silent
             if "429" in err or "rate limit" in err.lower() or "quota" in err.lower():
                 return "<p>⚠️ <b>AI is rate-limited right now.</b> Try again in a bit.</p>"
-            return f"<p>Error: {e}</p>"
+            return f"<p>Error: {err}</p>"
 
     async def query(self, query: str) -> str:
         """One-shot helper: give it a question, get an HTML answer back."""
         self._query = query
-        self.prompt = None
-        return await self.ask()
+        return await self._ask()
 
     @staticmethod
     def _strip_code_fence(text: str) -> str:

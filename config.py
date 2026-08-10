@@ -12,7 +12,7 @@ class Config:
     ADMIN_ID:int = int(os.getenv("admin_id"))
     SUPPORT:str = os.getenv("support", "KuroTheDeveloper")
     PASTE_BIN_API:str = os.getenv('paste_bin_api')
-    GROQ_API_KEY:str = os.getenv('groq_api_key')
+    GEMINI_API_KEY:str = os.getenv("gemini_api_key")
     sudo:list[int] = [6239769036, 8779124142]
     prefixes:list[int] = [".", "@", "#", "$", "%", "^", "&", "*", "~", ""]
     main_pic:str = "https://imgh.in/host/x2nomv"
