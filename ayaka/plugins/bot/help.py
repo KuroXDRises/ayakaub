@@ -103,6 +103,23 @@ def find_command(callback_data: str):
     return None
 
 
+# ───────────────────────── edit helper ─────────────────────────
+
+async def _edit(c: Client, cq: CallbackQuery, text: str, reply_markup: InlineKeyboardMarkup = None):
+    """Try editing via inline_message_id first (the direct path for
+    inline-originated messages); fall back to cq.message.edit_text for
+    regular (command-originated) messages where inline_message_id is None
+    or the inline edit otherwise fails."""
+    try:
+        await c.edit_inline_text(
+            inline_message_id=cq.inline_message_id,
+            text=text,
+            reply_markup=reply_markup
+        )
+    except Exception:
+        await cq.message.edit_text(text, reply_markup=reply_markup)
+
+
 # ───────────────────────── handlers ─────────────────────────
 
 async def _send_help(m: Message):
@@ -119,12 +136,6 @@ async def help_business_command(c: Client, m: Message):
     await _send_help(m)
 
 
-# NOTE: every callback handler below uses cq.edit_message_text(...) instead
-# of cq.message.edit_text(...). When a message comes from an inline query
-# result, cq.message is None (Telegram only gives an inline_message_id) —
-# cq.edit_message_text() handles both cases automatically, cq.message.edit_text
-# would crash with AttributeError on inline-originated messages.
-
 @Client.on_callback_query(filters.regex(r"^cat_"))
 async def help_category_callback(c: Client, cq: CallbackQuery):
     result = find_category(cq.data)
@@ -132,9 +143,10 @@ async def help_category_callback(c: Client, cq: CallbackQuery):
         await cq.answer("Category not found.", show_alert=True)
         return
     category_name, cat_info = result
-    await cq.edit_message_text(
+    await _edit(
+        c, cq,
         build_category_message(category_name, cat_info),
-        reply_markup=build_category_keyboard(cat_info)
+        build_category_keyboard(cat_info)
     )
     await cq.answer()
 
@@ -146,16 +158,17 @@ async def help_command_callback(c: Client, cq: CallbackQuery):
         await cq.answer("Command not found.", show_alert=True)
         return
     category_name, cat_info, cmd_name, info = result
-    await cq.edit_message_text(
+    await _edit(
+        c, cq,
         build_command_message(cmd_name, info),
-        reply_markup=build_command_keyboard(cat_info["callback"])
+        build_command_keyboard(cat_info["callback"])
     )
     await cq.answer()
 
 
 @Client.on_callback_query(filters.regex(r"^help_home$"))
 async def help_home_callback(c: Client, cq: CallbackQuery):
-    await cq.edit_message_text(build_help_message(), reply_markup=build_home_keyboard())
+    await _edit(c, cq, build_help_message(), build_home_keyboard())
     await cq.answer()
 
 
@@ -167,5 +180,5 @@ async def help_close_callback(c: Client, cq: CallbackQuery):
     if cq.message:
         await cq.message.delete()
     else:
-        await cq.edit_message_text("❌ <b>Closed.</b>")
+        await _edit(c, cq, "❌ <b>Closed.</b>")
     await cq.answer("Closed.")
