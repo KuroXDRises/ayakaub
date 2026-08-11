@@ -1,4 +1,6 @@
 from dataclasses import dataclass, field
+from datetime import datetime, time
+
 
 @dataclass
 class AfkState:
@@ -44,3 +46,12 @@ class RPSState:
     p2_id: int | None = None
 
 RPS_STATE = RPSState()
+
+@dataclass
+class NightState:
+    status: bool = False
+    start_time: time = time(22, 0)
+    end_time: time = time(7, 0)
+    cooldown: int = 120
+
+NIGHT_STATE = NightState()

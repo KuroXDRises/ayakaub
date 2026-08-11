@@ -94,7 +94,7 @@ STRICTLY OUTPUT VALID HTML ONLY.
 
 
 class AyakaAI:
-    def __init__(self, query: str = "", model: str = "gemini-2.0-flash"):
+    def __init__(self, query: str = "", model: str = "gemini-2.5-flash"):
         self.model = model
         self.client = genai.Client(api_key=Config.GEMINI_API_KEY)
         self._query = query
