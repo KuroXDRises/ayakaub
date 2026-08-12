@@ -7,12 +7,13 @@ A dual-client Telegram **userbot + bot** combo built on [Kurigram](https://docs.
 ## ✨ Features
 
 ### 🤖 AI Assistant
-- **AyakaAI** — Groq-powered (`llama-3.3-70b-versatile`) assistant with a custom shy/nervous anime-girl persona
+- **AyakaAI** — Gemini-powered (`gemini-2.0-flash`) assistant with a custom shy/nervous anime-girl persona
 - Structured HTML output (heading + separator + result blocks) built for Telegram's rich formatting
 - Auto-truncates to Telegram's message limit while keeping HTML tags valid
 - Available via `/ai`, `/ask`, or inline (`@YourBot ai <question>`)
 
 ### 🛠 Developer Tools
+- **Calculator** — inline arithmetic and symbolic equations: `@YourBot calc 2*(4+3)` or `@YourBot calc x^2-5*x+6=0`
 - `/eval`, `/e` — Python eval with sandboxed output, execution timeout, and Pastebin fallback for long output
 - `/sh` — Shell command execution, same timeout + Pastebin handling
 - `/logs` — Fetch bot logs, with Clear/Refresh buttons
@@ -45,7 +46,7 @@ A dual-client Telegram **userbot + bot** combo built on [Kurigram](https://docs.
 - **uvloop** — faster asyncio event loop
 - **aiohttp** — async HTTP (Pastebin uploads, etc.)
 - **python-dotenv** — `.env` config loading
-- **groq** — AI inference (Llama 3.3)
+- **google-genai** — AI inference (Gemini 2.0 Flash)
 
 ---
 

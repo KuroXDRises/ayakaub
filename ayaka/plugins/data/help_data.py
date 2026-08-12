@@ -25,6 +25,13 @@ HELP_DATA = {
     "🛠 Developer": {
         "callback": "cat_dev",
         "commands": {
+            "calc": {
+                "aliases": ["calculate"],
+                "usage": "calc <expression> (inline)",
+                "description": "Evaluate math or solve equations, including systems separated by semicolons.",
+                "callback": "help_calc",
+                "note": "Inline only — e.g. @YourBot calc x^2-5*x+6=0 or @YourBot calc x+y=10; x-y=4."
+            },
             "eval": {
                 "aliases": ["e"],
                 "usage": "/eval <code>",
