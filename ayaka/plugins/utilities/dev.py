@@ -6,7 +6,7 @@ from io import StringIO
 from contextlib import redirect_stdout, redirect_stderr
 from config import Config
 
-EXEC_TIMEOUT = 25  # seconds, applies to both eval and sh
+EXEC_TIMEOUT = 60  # seconds, applies to both eval and sh
 
 eval_helper = {
     "result": None,
@@ -35,12 +35,10 @@ async def aexec(code: str, c, m):
             .strip()
     )
 
-    # ❌ Yeh issue karta hai — indent add hone se triple-quote toot jaata hai
-    # "\n".join(f"    {line}" for line in code.splitlines())
-
-    # ✅ Fix — textwrap.indent use karo
+    # Indent every line so blank lines cannot terminate the async function
+    # body.  This is important for multiline/triple-quoted source blocks.
     import textwrap
-    indented = textwrap.indent(code, "    ")
+    indented = textwrap.indent(code, "    ", lambda _line: True)
 
     local_vars = {"c": c, "m": m}
     buffer = StringIO()
@@ -78,15 +76,16 @@ async def paste_to_pastebin(content: str) -> str:
 
 
 async def finalize_output(final: str) -> str:
-    """Shared by eval and sh: paste to Pastebin if output is too long."""
-    if final.count("\n") + 1 > 20:
+    char_limit = 4000  # Telegram message limit
+    if len(final) > char_limit:
         try:
             url = await paste_to_pastebin(final)
             eval_helper["paste_id"] = url.rsplit("/", 1)[-1]
-            preview = "\n".join(final.splitlines()[:20])
+            preview = final[:1000]
             return f"{preview}\n\n... output too long, full result: {url}"
         except Exception:
             pass
+        return final[:char_limit]
     return final
 
 
