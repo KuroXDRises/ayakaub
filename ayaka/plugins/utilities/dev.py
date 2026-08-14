@@ -25,36 +25,39 @@ eval_helper = {
 }
 
 
-async def aexec(code: str, client, msg):
-    # Telegram formatting / copy-paste can inject invisible unicode chars
-    # (non-breaking space, zero-width space, etc.) that break exec()'s parser.
+async def aexec(code: str, c, m):
     code = (
-        code.replace("\u00a0", " ")   # non-breaking space
-            .replace("\u200b", "")    # zero-width space
-            .replace("\u200c", "")    # zero-width non-joiner
-            .replace("\u200d", "")    # zero-width joiner
-            .replace("\ufeff", "")    # BOM
+        code.replace("\u00a0", " ")
+            .replace("\u200b", "")
+            .replace("\u200c", "")
+            .replace("\u200d", "")
+            .strip()
     )
 
-    local_vars = {
-        "app": client,
-        "msg": msg,
-        "m": msg,
-        "r": msg.reply_to_message,
-        "p": print,
-        "here": msg.chat.id,
-        "me": msg.from_user.id,
-        "__name__": __name__,
-        "__package__": __package__
-    }
+    # ❌ Yeh issue karta hai — indent add hone se triple-quote toot jaata hai
+    # "\n".join(f"    {line}" for line in code.splitlines())
+
+    # ✅ Fix — textwrap.indent use karo
+    import textwrap
+    indented = textwrap.indent(code, "    ")
+
+    local_vars = {"c": c, "m": m}
+    buffer = io.StringIO()
+    old_stdout = sys.stdout
+    sys.stdout = buffer
 
     exec(
-        "async def __ex():\n" +
-        "\n".join(f"    {line}" for line in code.splitlines()),
+        f"async def __ex():\n{indented}",
         local_vars
     )
 
-    return await local_vars["__ex"]()
+    result = await local_vars["__ex"]()
+    sys.stdout = old_stdout
+    printed = buffer.getvalue()
+
+    if result is not None:
+        return printed + str(result) if printed else str(result)
+    return printed or "None"
 
 
 async def paste_to_pastebin(content: str) -> str:
