@@ -31,6 +31,13 @@ async def main():
                 await userbot.stop()
         except Exception:
             pass
+        try:
+            from .plugins.utilities.session import session
+
+            if not session.closed:
+                await session.close()
+        except Exception:
+            pass
 
 
 if __name__ == "__main__":
