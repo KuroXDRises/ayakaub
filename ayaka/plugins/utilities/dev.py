@@ -1,6 +1,7 @@
 import traceback
 import aiohttp
 import asyncio
+import sys
 from io import StringIO
 from contextlib import redirect_stdout, redirect_stderr
 from config import Config
@@ -44,15 +45,15 @@ async def aexec(code: str, c, m):
     local_vars = {"c": c, "m": m}
     buffer = StringIO()
     old_stdout = sys.stdout
-    sys.stdout = buffer
-
-    exec(
-        f"async def __ex():\n{indented}",
-        local_vars
-    )
-
-    result = await local_vars["__ex"]()
-    sys.stdout = old_stdout
+    try:
+        sys.stdout = buffer
+        exec(
+            f"async def __ex():\n{indented}",
+            local_vars
+        )
+        result = await local_vars["__ex"]()
+    finally:
+        sys.stdout = old_stdout
     printed = buffer.getvalue()
 
     if result is not None:
