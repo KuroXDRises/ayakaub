@@ -42,7 +42,7 @@ async def aexec(code: str, c, m):
     indented = textwrap.indent(code, "    ")
 
     local_vars = {"c": c, "m": m}
-    buffer = io.StringIO()
+    buffer = StringIO()
     old_stdout = sys.stdout
     sys.stdout = buffer
 
