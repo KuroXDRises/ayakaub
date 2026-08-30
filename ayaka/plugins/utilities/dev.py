@@ -40,7 +40,14 @@ async def aexec(code: str, c, m):
     import textwrap
     indented = textwrap.indent(code, "    ", lambda _line: True)
 
-    local_vars = {"c": c, "m": m}
+    local_vars = {
+        "c": c,
+        "m": m,
+        "app": c,
+        "r", m.reply_to_message,
+        "r_user": m.reply_to_message.from_user,
+        "user": m.from_user,
+    }
     buffer = StringIO()
     old_stdout = sys.stdout
     try:
@@ -56,7 +63,7 @@ async def aexec(code: str, c, m):
 
     if result is not None:
         return printed + str(result) if printed else str(result)
-    return printed or "None"
+    return printed or "Done."
 
 
 async def paste_to_pastebin(content: str) -> str:
