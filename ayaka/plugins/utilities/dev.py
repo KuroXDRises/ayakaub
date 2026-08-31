@@ -44,7 +44,7 @@ async def aexec(code: str, c, m):
         "c": c,
         "m": m,
         "app": c,
-        "r":, m.reply_to_message,
+        "r": m.reply_to_message,
         "r_user": m.reply_to_message.from_user,
         "user": m.from_user,
     }
