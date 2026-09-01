@@ -54,7 +54,7 @@ async def read_chats(c:Client, m:Message):
 async def silent_status_command(c:Client, m:Message):
     text = (
         "**「 Silent Status 」**\n"
-        f"**Status:** {"`Active`" if SILENT_STATE.status else "`Disabled`"}\n"
+        f"**Status:** {'`Active`' if SILENT_STATE.status else '`Disabled`'}\n"
         f"**Silent Chats:** {[_ for _ in SILENT_STATE.chat_ids]}"
     )
     await m.reply(text)
