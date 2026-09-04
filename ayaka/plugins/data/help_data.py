@@ -14,12 +14,35 @@ HELP_DATA = {
                 "description": "Ask AyakaAI a question – returns an HTML formatted answer.",
                 "callback": "help_ayaka_guest"
             },
+            "speak": {
+                "aliases": [],
+                "usage": "speak [query]",
+                "description": "Ayaka ai will speak what you write.",
+                "callback": "help_speak"
+            }
+        }
+    },
+    "👤 Info": {
+        "callback": "cat_info",
+        "commands": {
+            "git_user": {
+                "aliases": [],
+                "usage": "git_user <username>",
+                "description": "Search for a github account.",
+                "callback": "help_git"
+            },
+            "search_img": {
+                "aliases": [],
+                "usage": "search_img [query]",
+                "description": "Search any image on the internet.",
+                "callback": "help_img"
+            }
             "anime": {
                 "aliases": [],
                 "usage": "anime [anime-name] (inline)",
                 "description": "Search your desired anime – AI will search it for you.",
                 "callback": "help_anime"
-            }
+            },
         }
     },
     "🛠 Developer": {

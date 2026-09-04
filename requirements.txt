@@ -4,4 +4,4 @@ uvloop
 aiohttp
 python-dotenv
 google-genai
-sympy
+edge-tts
