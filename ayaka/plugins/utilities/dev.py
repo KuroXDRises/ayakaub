@@ -45,8 +45,10 @@ async def aexec(code: str, c, m):
         "m": m,
         "app": c,
         "r": m.reply_to_message,
-        "r_user": m.reply_to_message.from_user,
+        "r_user": m.reply_to_message.from_user or None,
         "user": m.from_user,
+        "p": print,
+        
     }
     buffer = StringIO()
     old_stdout = sys.stdout
