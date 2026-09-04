@@ -36,7 +36,7 @@ HELP_DATA = {
                 "usage": "search_img [query]",
                 "description": "Search any image on the internet.",
                 "callback": "help_img"
-            }
+            },
             "anime": {
                 "aliases": [],
                 "usage": "anime [anime-name] (inline)",
