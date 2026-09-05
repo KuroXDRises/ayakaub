@@ -14,7 +14,6 @@ async def eval_command(c: Client, m: Message):
     if len(parts) < 2 or not parts[1].strip():
         await m.reply_text(
             "❌ Usage: `/eval <code>` or `/e <code>`",
-            reply_parameters=ReplyParameters(message_id=m.id)
         )
         return
 
@@ -32,7 +31,6 @@ async def eval_command(c: Client, m: Message):
     if not result.results:
         await m.reply_text(
             "❌ Something went wrong, try again.",
-            reply_parameters=ReplyParameters(message_id=m.id)
         )
         return
     EVAL_CACHE["chat_id"] = m.chat.id

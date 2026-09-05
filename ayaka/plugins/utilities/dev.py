@@ -45,7 +45,7 @@ async def aexec(code: str, c, m):
         "m": m,
         "app": c,
         "r": m.reply_to_message,
-        "r_user": m.reply_to_message.from_user or None,
+        "r_user": None if not m.reply_to_message else m.reply_to_message.from_user,
         "user": m.from_user,
         "p": print,
         
