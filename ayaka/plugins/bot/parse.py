@@ -8,7 +8,7 @@ async def idk_plugin(c:Client, m:Message):
     if len(m.text.split())<2:
         await m.reply("Wrong Format")
     else:
-        code = " ".join(m.text.split(" ")[2:])
+        code = m.text.split(" ", 1)[1]
         await c.send_rich_message(
             chat_id=m.chat.id,
             rich_message=InputRichMessage(html=code)
