@@ -246,16 +246,10 @@ async def solve_captcha(image_bytes: bytes) -> str:
     return completion.choices[0].message.content.strip()
 
 
-app = Client(
-    "money_rain",
-    api_id=27548865,
-    api_hash="db07e06a5eb288c706d4df697b71ab61"
-)
-
 BOT_ID = 8790267038
 ACTIVE : bool = False
 
-@app.on_message(filters.command("maze", prefixes=[""]) & filters.me, group=755)
+@Client.on_message(filters.command("maze", prefixes=[""]) & filters.me, group=755)
 async def maze_on_of(c: Client, m: types.Message):
     if len(m.command)<2:
         return await m.reply("maze on|off")
@@ -267,7 +261,7 @@ async def maze_on_of(c: Client, m: types.Message):
         await m.reply("Maze Auto Off")
     
 
-@app.on_message(filters.user([BOT_ID, 8966963895]) & filters.chat([8903449862]) & (filters.text | filters.photo))
+@Client.on_message(filters.user([BOT_ID, 8966963895]) & filters.chat([8903449862]) & (filters.text | filters.photo))
 async def rain_catch(c: Client, m: types.Message):
     if m.from_user.id != BOT_ID or not ACTIVE:
         return
@@ -292,8 +286,3 @@ async def rain_catch(c: Client, m: types.Message):
         photo_bytes = await c.download_media(m.photo.file_id, in_memory=True)
         code = await solve_captcha(photo_bytes.getvalue())
         await m.reply(code)
-
-
-if __name__ == "__main__":
-    print("Autorain bot started.")
-    app.run()
