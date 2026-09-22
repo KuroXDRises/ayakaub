@@ -5,3 +5,5 @@ aiohttp
 python-dotenv
 google-genai
 edge-tts
+sympy
+groq
