@@ -1,8 +1,10 @@
 import asyncio
-from pyrogram import Client, filters, types
-import random
+import json
+import os
 import re
 import base64
+import random
+from pyrogram import Client, filters, types
 from groq import AsyncGroq
 
 COUNTRIES = {
@@ -206,6 +208,29 @@ COUNTRIES = {
 GROQ_API_KEY = "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"  # get one from https://console.groq.com/keys
 groq_client = AsyncGroq(api_key=GROQ_API_KEY)
 
+DATA_FILE = os.path.join(os.path.dirname(__file__), "coins_data.json")
+
+
+def load_coin_data() -> dict:
+    if os.path.exists(DATA_FILE):
+        try:
+            with open(DATA_FILE, "r") as f:
+                return json.load(f)
+        except (json.JSONDecodeError, OSError):
+            pass
+    return {"total": 0}
+
+
+def save_coin_data():
+    with open(DATA_FILE, "w") as f:
+        json.dump(coin_data, f)
+
+
+coin_data = load_coin_data()
+session_coins = 0
+
+COIN_RE = re.compile(r'(\d+(?:\.\d+)?)\s*coins?', re.IGNORECASE)
+
 
 def get_country(text: str):
     FLAG_RE = re.compile(r'[\U0001F1E6-\U0001F1FF]{2}')
@@ -247,11 +272,13 @@ async def solve_captcha(image_bytes: bytes) -> str:
 
 
 BOT_ID = 8790267038
-ACTIVE : bool = False
+ACTIVE: bool = False
+
 
 @Client.on_message(filters.command("maze", prefixes=[""]) & filters.me, group=755)
 async def maze_on_of(c: Client, m: types.Message):
-    if len(m.command)<2:
+    global ACTIVE
+    if len(m.command) < 2:
         return await m.reply("maze on|off")
     if m.command[1] == "on":
         ACTIVE = True
@@ -259,18 +286,39 @@ async def maze_on_of(c: Client, m: types.Message):
     if m.command[1] == "off":
         ACTIVE = False
         await m.reply("Maze Auto Off")
-    
 
-@Client.on_message(filters.user([BOT_ID, 8966963895]) & filters.chat([8903449862]) & (filters.text | filters.photo))
-async def rain_catch(c: Client, m: types.Message):
-    if m.from_user.id != BOT_ID or not ACTIVE:
+
+@Client.on_message(filters.command("coins", prefixes=[""]) & filters.me, group=756)
+async def coins_stat(c: Client, m: types.Message):
+    await m.reply(
+        f"🪙 **Coins**\n\nThis session: `{session_coins}`\nTotal (all-time): `{coin_data.get('total', 0)}`"
+    )
+
+
+RAIN_SOURCE_FILTER = (
+    filters.user([BOT_ID, 8966963895, 8649620813])
+    & filters.chat([8649620813, 8903449862, -1003929450754])
+    & (filters.text | filters.photo)
+)
+async def _handle_rain_message(c: Client, m: types.Message):
+    global session_coins
+
+    if not ACTIVE:
         return
 
     text = m.text or m.caption or ""
 
     if text.startswith("🌧 RAIN!"):
-        await m.click()
+        result = await m.click()
         await m.reply(random.choice(["HII", "HI", "yo", "Sup", "Let me grab this."]))
+
+        alert_text = getattr(result, "message", None) or ""
+        match = COIN_RE.search(alert_text)
+        if match:
+            amount = float(match.group(1))
+            session_coins += amount
+            coin_data["total"] = coin_data.get("total", 0) + amount
+            save_coin_data()
 
     elif text.startswith("🎯 CLOSEST GUESS"):
         await asyncio.sleep(random.uniform(0.2, 0.6))
@@ -286,3 +334,15 @@ async def rain_catch(c: Client, m: types.Message):
         photo_bytes = await c.download_media(m.photo.file_id, in_memory=True)
         code = await solve_captcha(photo_bytes.getvalue())
         await m.reply(code)
+
+
+@Client.on_message(RAIN_SOURCE_FILTER, group=474)
+async def rain_catch(c: Client, m: types.Message):
+    await _handle_rain_message(c, m)
+
+
+@Client.on_edited_message(RAIN_SOURCE_FILTER, group=474)
+async def rain_catch_edited(c: Client, m: types.Message):
+    # the bot often edits a "get ready" placeholder into the actual
+    # "🌧 RAIN!" trigger instead of sending a brand-new message — catch that too
+    await _handle_rain_message(c, m)
