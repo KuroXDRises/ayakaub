@@ -334,15 +334,3 @@ async def _handle_rain_message(c: Client, m: types.Message):
         photo_bytes = await c.download_media(m.photo.file_id, in_memory=True)
         code = await solve_captcha(photo_bytes.getvalue())
         await m.reply(code)
-
-
-@Client.on_message(RAIN_SOURCE_FILTER, group=474)
-async def rain_catch(c: Client, m: types.Message):
-    await _handle_rain_message(c, m)
-
-
-@Client.on_edited_message(RAIN_SOURCE_FILTER, group=474)
-async def rain_catch_edited(c: Client, m: types.Message):
-    # the bot often edits a "get ready" placeholder into the actual
-    # "🌧 RAIN!" trigger instead of sending a brand-new message — catch that too
-    await _handle_rain_message(c, m)
