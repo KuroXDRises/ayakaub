@@ -27,7 +27,7 @@ async def imbb_inline(c: Client, q: InlineQuery):
         f"<tr><td>Type</td><td><code>{data['mime']}</code></td></tr>"
         f"<tr><td>Name</td><td><code>{data['name']}</code></td></tr>"
         f"</table>"
-        f'<footer><a href="{data["delete_url"]}">🗑 Delete</a></footer>'
+        f'<tg-button-row><tg-button type="url" style="danger" url="{data["delete_url"]}"><b>Delete</b></tg-button></tg-button-row>'
     )
 
     await q.answer([
