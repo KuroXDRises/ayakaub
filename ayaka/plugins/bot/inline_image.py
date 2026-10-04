@@ -7,9 +7,9 @@ from pyrogram.types import (
 )
 from ..filters import ADMINS
 from ..utilities.dev import eval_helper
-from ..user.imbb import CACHE
 
-@Client.on_inline_query(filters.regex("^image$") & ADMINS.inline())
+
+@Client.on_inline_query(filters.regex(r"^image") & ADMINS.inline())
 async def imbb_inline(c: Client, q: InlineQuery):
     data = eval_helper.get("imbb_image")
 
