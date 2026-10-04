@@ -7,6 +7,7 @@ from ayaka import cmd
 from ..filters import ADMINS
 from config import Config
 
+CACHE = {}
 
 @Client.on_message(cmd(["imbb"]) & ADMINS.message(), group=543)
 async def imbb(c: Client, m: Message):
@@ -26,6 +27,7 @@ async def imbb(c: Client, m: Message):
 
     try:
         eval_helper["imbb_image"] = data
+        CACHE["id"] = m.reply_to_message.id
     
         await x.delete()
     
@@ -37,7 +39,7 @@ async def imbb(c: Client, m: Message):
             chat_id=m.chat.id,
             query_id=results.query_id,
             result_id=results.results[0].id,
-            reply_parameters=ReplyParameters(message_id=m.reply_to_message.id)
+            reply_parameters=ReplyParameters(message_id=CACHE["id"])
         )
     except Exception as e:
         print(e)
