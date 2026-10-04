@@ -1,6 +1,10 @@
 from pyrogram import Client, filters
-from pyrogram.enums import ParseMode
-from pyrogram.types import InlineQuery, InlineQueryResultPhoto
+from pyrogram.types import (
+    InlineQuery,
+    InlineQueryResultArticle,
+    InputRichMessageContent,
+    InputRichMessage,
+)
 from ..filters import ADMINS
 from ..utilities.dev import eval_helper
 
@@ -12,25 +16,26 @@ async def imbb_inline(c: Client, q: InlineQuery):
     if not data:
         return await q.answer([], cache_time=0)
 
-    caption = (
-        f"<b>📷 Uploaded Image</b>\n"
-        f"<b>URL:</b> <a href=\"{data['url']}\">Open</a>\n"
-        f"<b>Size:</b> <code>{round(data['size'] / 1024, 1)} KB</code>\n"
-        f"<b>Dimensions:</b> <code>{data['width']} × {data['height']}</code>\n"
-        f"<b>Type:</b> <code>{data['mime']}</code>\n"
-        f"<b>Name:</b> <code>{data['name']}</code>\n"
-        f"<a href=\"{data['delete_url']}\">🗑 Delete</a>"
+    html = (
+        f'<img src="{data["url"]}">'
+        f"<h3>📷 Uploaded Image</h3>"
+        f"<table bordered striped>"
+        f"<tr><th>Field</th><th>Value</th></tr>"
+        f"<tr><td>URL</td><td><a href=\"{data['url']}\">Open</a></td></tr>"
+        f"<tr><td>Size</td><td><code>{round(data['size'] / 1024, 1)} KB</code></td></tr>"
+        f"<tr><td>Dimensions</td><td><code>{data['width']} × {data['height']}</code></td></tr>"
+        f"<tr><td>Type</td><td><code>{data['mime']}</code></td></tr>"
+        f"<tr><td>Name</td><td><code>{data['name']}</code></td></tr>"
+        f"</table>"
+        f'<footer><a href="{data["delete_url"]}">🗑 Delete</a></footer>'
     )
 
     await q.answer([
-        InlineQueryResultPhoto(
-            photo_url=data["url"],
-            thumb_url=data["thumb"],
-            photo_width=data["width"],
-            photo_height=data["height"],
+        InlineQueryResultArticle(
             title="📷 ImgBB Upload",
-            description=f"{data['width']}×{data['height']} · {round(data['size'] / 1024, 1)} KB",
-            caption=caption,
-            parse_mode=ParseMode.HTML
+            description=f"{data['width']}×{data['height']} · {round(data['size']/1024, 1)} KB",
+            input_message_content=InputRichMessageContent(
+                InputRichMessage(html)
+            ),
         )
     ], cache_time=0)
