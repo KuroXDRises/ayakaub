@@ -24,20 +24,21 @@ async def imbb(c: Client, m: Message):
         api_key=Config.IMBB_IMAGE_API
     )
 
-    if not data:
-        return await x.edit("**__❌ Upload failed.__**")
-
-    eval_helper["imbb_image"] = data
-
-    await x.delete()
-
-    results = await c.get_inline_bot_results(
-        bot=Config.BOT_USERNAME,
-        query="image"
-    )
-    await c.send_inline_bot_result(
-        chat_id=m.chat.id,
-        query_id=results.query_id,
-        result_id=results.results[0].id,
-        reply_parameters=ReplyParameters(message_id=m.reply_to_message.id)
-    )
+    try:
+        eval_helper["imbb_image"] = data
+    
+        await x.delete()
+    
+        results = await c.get_inline_bot_results(
+            bot=Config.BOT_USERNAME,
+            query="image"
+        )
+        await c.send_inline_bot_result(
+            chat_id=m.chat.id,
+            query_id=results.query_id,
+            result_id=results.results[0].id,
+            reply_parameters=ReplyParameters(message_id=m.reply_to_message.id)
+        )
+    except Exception as e:
+        print(e)
+        await x.edit("**__❌ Upload Failed__**")
