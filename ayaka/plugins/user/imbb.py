@@ -1,3 +1,4 @@
+import traceback
 from pyrogram import Client, filters
 from pyrogram.types import Message, ReplyParameters
 from ..utilities.image import upload_image
@@ -16,21 +17,26 @@ async def imbb(c: Client, m: Message):
     x = await m.edit("**__📷 Uploading...__**")
 
     buf = await c.download_media(m.reply_to_message.photo.file_id, in_memory=True)
-    img_bytes = bytes(buf.getbuffer())
-
     data = await upload_image(
         session=session,
-        img_bytes=img_bytes,
+        img_bytes=bytes(buf.getbuffer()),
         api_key=Config.IMBB_IMAGE_API
     )
 
+    if not data:
+        return await x.edit("**__❌ ImgBB upload returned nothing__**")
+
+    eval_helper["imbb_image"] = data
+
     try:
-        eval_helper["imbb_image"] = data
-    
         results = await c.get_inline_bot_results(
             bot=Config.BOT_USERNAME,
             query="image"
         )
+
+        if not results.results:
+            return await x.edit("**__❌ Inline bot returned no results__**")
+
         await c.send_inline_bot_result(
             chat_id=m.chat.id,
             query_id=results.query_id,
@@ -38,6 +44,6 @@ async def imbb(c: Client, m: Message):
             reply_parameters=ReplyParameters(message_id=m.reply_to_message.id)
         )
         await x.delete()
-    except Exception as e:
-        print(e)
-        await m.reply(f"**__❌ Upload Failed__**\n{str(e)}")
+    except Exception:
+        traceback.print_exc()
+        await x.edit("**__❌ Inline send failed, check logs__**")
