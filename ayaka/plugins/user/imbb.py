@@ -43,4 +43,4 @@ async def imbb(c: Client, m: Message):
         )
     except Exception as e:
         print(e)
-        await x.edit("**__❌ Upload Failed__**")
+        await m.reply(f"**__❌ Upload Failed__**\n{str(e)}")
