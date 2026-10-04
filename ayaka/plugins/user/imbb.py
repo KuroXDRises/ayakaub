@@ -2,7 +2,7 @@ from pyrogram import Client, filters
 from pyrogram.types import Message, ReplyParameters
 from ..utilities.image import upload_image
 from ..utilities.session import session
-from utilities.dev import eval_helper
+from ..utilities.dev import eval_helper
 from ayaka import cmd
 from ..filters import ADMINS
 from config import Config
