@@ -48,7 +48,7 @@ async def ping_inline(c:Client, q:InlineQuery):
             thumb_url=Config.main_pic,
             title="📊 Bot Statistics",
             input_message_content=InputRichMessageContent(
-                InputRichMessage(text)
+                InputRichMessage(html=text)
             )
         )
     ], cache_time=0)
