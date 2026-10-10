@@ -263,6 +263,39 @@ HELP_DATA = {
                 "description": "Show the bot's intro message.",
                 "callback": "help_start"
             },
+            "add_emoji": {
+                "aliases": [],
+                "usage": "/add_emoji (reply) or /add_emoji <emoji> <emoji_id>",
+                "description": "Save a premium emoji so /emojify can swap it into your text.",
+                "callback": "help_add_emoji",
+                "note": "Reply to a message with premium emojis (all of them get saved), or give the emoji and its ID manually."
+            },
+            "rem_emoji": {
+                "aliases": [],
+                "usage": "/rem_emoji (reply) or /rem_emoji <emoji>",
+                "description": "Remove a saved premium emoji.",
+                "callback": "help_rem_emoji"
+            },
+            "emojify": {
+                "aliases": [],
+                "usage": "/emojify <text> or /emojify (reply)",
+                "description": "Send your text with every saved emoji replaced by its premium version.",
+                "callback": "help_emojify",
+                "note": "Goes through the inline bot, so it shows Please wait... first and then updates."
+            },
+            "clone": {
+                "aliases": [],
+                "usage": "/clone (reply)",
+                "description": "Copy a user's name, bio and profile photo to your account.",
+                "callback": "help_clone",
+                "note": "Must be used as a reply. Your original name and bio are saved so /revert can restore them."
+            },
+            "revert": {
+                "aliases": [],
+                "usage": "/revert",
+                "description": "Restore your original name and bio, and remove the cloned photo.",
+                "callback": "help_revert"
+            },
         }
     },
     "🎮 Games": {
