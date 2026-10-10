@@ -21,7 +21,7 @@ def to_pyro(html: str) -> str:
     return TAG.sub(r'<emoji id="\1">', html).replace("</tg-emoji>", "</emoji>")
 
 
-@Client.on_inline_query(filters.regex(r"^prem [0-9a-f]{8}$") & ADMINS.inline(), group=564)
+@Client.on_inline_query(filters.regex(r"^prem (.+)")& ADMINS.inline(), group=564)
 async def prem_inline(c: Client, q: InlineQuery):
     token = q.query.split()[1]
     await q.answer([
