@@ -1,5 +1,5 @@
 import traceback
-from pyrogram import Client, filters
+from pyrogram import Client, filters, raw
 from pyrogram.types import Message
 from ayaka import cmd
 
@@ -70,8 +70,24 @@ async def revert_handler(c: Client, m: Message):
             bio=OUR_IDENTITY["bio"]
         )
         if OUR_IDENTITY["photos"]:
-            ids = [p.file_id async for p in c.get_chat_photos("me", limit=OUR_IDENTITY["photos"])]
-            await c.delete_profile_photos(ids)
+            res = await c.invoke(
+                raw.functions.photos.GetUserPhotos(
+                    user_id=raw.types.InputUserSelf(),
+                    offset=0,
+                    max_id=0,
+                    limit=OUR_IDENTITY["photos"]
+                )
+            )
+            ids = [
+                raw.types.InputPhoto(
+                    id=p.id,
+                    access_hash=p.access_hash,
+                    file_reference=p.file_reference
+                )
+                for p in res.photos
+            ]
+            if ids:
+                await c.invoke(raw.functions.photos.DeletePhotos(id=ids))
         OUR_IDENTITY.update(first_name=None, last_name="", bio="", photos=0, cloned=False)
         await x.edit("**__✅ Identity restored__**")
     except Exception as e:
