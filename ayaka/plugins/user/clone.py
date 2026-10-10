@@ -35,14 +35,24 @@ async def clone_handler(c: Client, m: Message):
             last_name=target.last_name or "",
             bio=bio
         )
+        photo_err = None
         try:
-            async for p in c.get_chat_photos(target.id, limit=1):
-                buf = await c.download_media(p.file_id, in_memory=True)
+            fid = target.photo.big_file_id if target.photo else None
+            if fid is None:
+                async for p in c.get_chat_photos(target.id, limit=1):
+                    fid = p.file_id
+            if fid:
+                buf = await c.download_media(fid, in_memory=True)
                 await c.set_profile_photo(photo=buf)
                 OUR_IDENTITY["photos"] += 1
-        except Exception:
-            traceback.print_exc()
-        await x.edit(f"**__✅ Cloned {target.first_name}__**")
+            else:
+                photo_err = "no photo visible"
+        except Exception as e:
+            photo_err = f"{type(e).__name__}: {e}"
+        await x.edit(
+            f"**__✅ Cloned {target.first_name}__**"
+            + (f"\n**__⚠️ Photo: {photo_err}__**" if photo_err else "")
+        )
     except Exception as e:
         traceback.print_exc()
         await x.edit(f"**__❌ {type(e).__name__}: {e}__**")
