@@ -13,6 +13,7 @@ class Config:
     SUPPORT:str = os.getenv("support", "KuroTheDeveloper")
     PASTE_BIN_API:str = os.getenv('paste_bin_api')
     GEMINI_API_KEY:str = os.getenv("gemini_api_key")
-    sudo:list[int] = [6239769036, 8779124142]
+    IMBB_IMAGE_API:str = os.getenv('imbb_image_api', "783167edc9647ee5c2426b86a08a7b91")
+    sudo:list[int] = [8903449862]
     prefixes:list[int] = [".", "@", "#", "$", "%", "^", "&", "*", "~", ""]
     main_pic:str = "https://imgh.in/host/x2nomv"

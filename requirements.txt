@@ -1,7 +1,9 @@
-git+https://github.com/KurimuzonAkuma/kurigram.git
+kurigram==2.2.25
 tgcrypto
 uvloop
 aiohttp
 python-dotenv
 google-genai
 edge-tts
+sympy
+groq

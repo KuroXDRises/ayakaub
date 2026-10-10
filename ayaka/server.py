@@ -3,7 +3,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-PORT:int = 8080
+PORT:int = 3030
 
 async def checkHealth(request):
     return Response(text="Server Running...", content_type="text/plain")
